@@ -1,0 +1,29 @@
+{
+  "name": "routiner-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/app/main.js",
+  "scripts": {
+    "prestart": "npm run build",
+    "postinstall": "npm run build",
+    "build": "tsc -p tsconfig.json",
+    "start": "node --inspect=5858 -r ts-node/register ./app/main.ts",
+    "start:watch": "nodemon"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fastify": "^3.21.1",
+    "fastify-auth": "^1.1.0",
+    "fastify-blipp": "^3.1.0",
+    "fastify-env": "^2.1.1",
+    "fastify-plugin": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^16.9.1",
+    "nodemon": "^2.0.12",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.3"
+  }
+}

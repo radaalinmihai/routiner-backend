@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "outDir": "dist",
+    "baseUrl": ".",
+    "types": [
+      "node"
+    ],
+    "lib": [
+      "esnext"
+    ]
+  },
+  "ts-node": {
+    "files": true
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "include": ["app/**/*"]
+}
