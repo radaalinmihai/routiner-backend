@@ -1,6 +1,6 @@
 export const schemaEnv = {
 	type: 'object',
-	required: ['DATABASE_USERNAME', 'DATABASE_PASSWORD', 'DATABASE_NAME', 'DATABASE_TYPE'],
+	required: ['DATABASE_USERNAME', 'DATABASE_PASSWORD', 'DATABASE_NAME', 'DATABASE_HOST'],
 	properties: {
 		DATABASE_USERNAME: {
 			type: 'string',
@@ -11,7 +11,7 @@ export const schemaEnv = {
 		DATABASE_NAME: {
 			type: 'string'
 		},
-		DATABASE_TYPE: {
+		DATABASE_HOST: {
 			type: 'string'
 		}
 	}
