@@ -8,23 +8,38 @@
     "postinstall": "npm run build",
     "build": "tsc -p tsconfig.json",
     "start": "node --inspect=5858 -r ts-node/register ./app/main.ts",
-    "start:watch": "nodemon"
+    "start:watch": "nodemon",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "prepare": "husky install",
+    "precommit": "npm run lint:fix"
   },
   "keywords": [],
-  "author": "",
+  "author": "Rada Alin Mihai",
   "license": "ISC",
   "dependencies": {
+    "@sinclair/typebox": "^0.20.5",
     "fastify": "^3.21.1",
     "fastify-auth": "^1.1.0",
+    "fastify-bearer-auth": "^6.0.0",
     "fastify-blipp": "^3.1.0",
     "fastify-env": "^2.1.1",
+    "fastify-jwt": "^3.2.1",
     "fastify-mysql": "^2.1.0",
-    "fastify-plugin": "^3.0.0"
+    "fastify-plugin": "^3.0.0",
+    "fastify-swagger": "^4.12.4"
   },
   "devDependencies": {
     "@types/node": "^16.9.1",
+    "@typescript-eslint/eslint-plugin": "^5.2.0",
+    "@typescript-eslint/parser": "^5.2.0",
+    "eslint": "^8.1.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^7.0.4",
     "nodemon": "^2.0.12",
     "pino-pretty": "^7.0.1",
+    "prettier": "^2.4.1",
     "ts-node": "^10.2.1",
     "typescript": "^4.4.3"
   }

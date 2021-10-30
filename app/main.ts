@@ -1,29 +1,33 @@
 import fastify from "fastify";
 import fastifyBlipp from "fastify-blipp";
-import routes from "./routes/auth";
+import authRoutes from "./routes/auth";
 import dotenv from "./plugins/dotenv";
 import mysqlInstance from "./plugins/mysql";
+import fastifySwagger from "fastify-swagger";
+import { swaggerConfig } from "./common/config";
 
 const server = fastify({
 	logger: {
 		prettyPrint: true,
-	}
+	},
 });
 
 server.register(fastifyBlipp);
 server.register(dotenv);
 server.register(mysqlInstance);
-server.register(routes);
+server.register(fastifySwagger, swaggerConfig);
+server.register(authRoutes, { prefix: "/auth" });
 
 const start = async () => {
 	try {
 		await server.listen(3000);
 
 		server.blipp();
-	} catch(err) {
+		server.swagger();
+	} catch (err) {
 		server.log.error(err);
 		process.exit(1);
 	}
-}
+};
 
 start();
