@@ -22,7 +22,7 @@ export const loginHandler: RouteHandlerMethod<
       const [rows, fields] = res.entries();
       server.log.info("fields", rows);
       return reply.send({
-        access_token: "some access token that needs to be added",
+        access_token: "another access token lol",
       });
     })
     .catch((err) => {

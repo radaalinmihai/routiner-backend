@@ -12,7 +12,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prepare": "husky install",
-    "precommit": "npm run lint:fix"
+    "test": "npm run lint:fix"
   },
   "keywords": [],
   "author": "Rada Alin Mihai",
