@@ -5,6 +5,7 @@ import dotenv from "./plugins/dotenv";
 import mysqlInstance from "./plugins/mysql";
 import fastifySwagger from "fastify-swagger";
 import { swaggerConfig } from "./common/config";
+import fastifyBcrypt from "./plugins/bcrypt";
 
 const server = fastify({
 	logger: {
@@ -15,6 +16,7 @@ const server = fastify({
 server.register(fastifyBlipp);
 server.register(dotenv);
 server.register(mysqlInstance);
+server.register(fastifyBcrypt, { saltWorkFactor: 16 });
 server.register(fastifySwagger, swaggerConfig);
 server.register(authRoutes, { prefix: "/auth" });
 

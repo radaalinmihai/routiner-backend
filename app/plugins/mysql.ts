@@ -3,12 +3,8 @@ import fastifyMySQL from "fastify-mysql";
 import fp from "fastify-plugin";
 
 async function mysqlInstance(fastify: FastifyInstance) {
-	const {
-		DATABASE_USERNAME,
-		DATABASE_PASSWORD,
-		DATABASE_HOST,
-		DATABASE_NAME,
-	} = fastify.environmentConfiguration;
+	const { DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_HOST, DATABASE_NAME } =
+		fastify.environmentConfiguration;
 	fastify
 		.register(fastifyMySQL, {
 			type: "connection",
