@@ -58,7 +58,7 @@ export const swaggerConfig: SwaggerOptions = {
 		schemes: ["http"],
 		consumes: ["application/json"],
 		produces: ["application/json"],
-		tags: [{ name: "User" }, { name: "Routines" }],
+		tags: [{ name: "Auth" }, { name: "Routines" }],
 		securityDefinitions: {
 			apiKey: {
 				type: "apiKey",

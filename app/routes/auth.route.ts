@@ -1,19 +1,19 @@
 import { FastifyInstance } from "fastify";
 import authOptions from "../schemas/auth.schema";
-import { UserBody, UserReturn } from "../models/user.model";
+import { UserModel, UserReply } from "../models/user.model";
 import {
 	loginHandler,
 	registerHandler,
 } from "../controllers/User/user.controller";
 
 async function authRoutes(fastify: FastifyInstance) {
-	fastify.post<{ Body: UserBody; Reply: UserReturn }>(
+	fastify.post<{ Body: UserModel; Reply: UserReply }>(
 		"/login",
 		authOptions,
 		loginHandler,
 	);
 
-	fastify.post<{ Body: UserBody; Reply: UserReturn }>(
+	fastify.post<{ Body: UserModel; Reply: UserReply }>(
 		"/register",
 		authOptions,
 		registerHandler,

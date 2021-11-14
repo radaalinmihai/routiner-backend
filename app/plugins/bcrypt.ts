@@ -10,8 +10,7 @@ const bcryptPlugin: FastifyPluginCallback<IBcrypt> = function (
 ) {
 	const saltWorkFactor = options?.saltWorkFactor || 10;
 
-	const hash = async (pwd: string) =>
-		bcrypt.hash(pwd, saltWorkFactor);
+	const hash = async (pwd: string) => bcrypt.hash(pwd, saltWorkFactor);
 
 	const compare = async (claim1: string, claim2: string) =>
 		bcrypt.compare(claim1, claim2);

@@ -1,8 +1,9 @@
 import { RouteShorthandOptions } from "fastify";
+import { UserReply } from "../models/user.model";
 
 const authOptions: RouteShorthandOptions = {
 	schema: {
-		tags: ["User"],
+		tags: ["Auth"],
 		body: {
 			type: "object",
 			properties: {
@@ -18,11 +19,7 @@ const authOptions: RouteShorthandOptions = {
 			},
 		},
 		response: {
-			200: {
-				access_token: {
-					type: "string",
-				},
-			},
+			200: UserReply,
 		},
 	},
 };
