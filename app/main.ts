@@ -1,4 +1,4 @@
-import fastify from "fastify";
+import fastify, { FastifyServerOptions } from "fastify";
 import fastifyBlipp from "fastify-blipp";
 import authRoutes from "./routes/auth.route";
 import dotenv from "./plugins/dotenv";
@@ -8,30 +8,18 @@ import { swaggerConfig } from "./common/config";
 import fastifyBcrypt from "./plugins/bcrypt";
 import userRoutes from "./routes/user.route";
 
-const server = fastify({
-	logger: {
-		prettyPrint: true,
-	},
-});
+const build = (options?: FastifyServerOptions) => {
+	const app = fastify(options);
 
-server.register(fastifyBlipp);
-server.register(dotenv);
-server.register(mysqlInstance);
-server.register(fastifyBcrypt, { saltWorkFactor: 16 });
-server.register(fastifySwagger, swaggerConfig);
-server.register(authRoutes, { prefix: "/auth" });
-server.register(userRoutes);
+	app.register(fastifyBlipp);
+	app.register(dotenv);
+	app.register(mysqlInstance);
+	app.register(fastifyBcrypt, { saltWorkFactor: 16 });
+	app.register(fastifySwagger, swaggerConfig);
+	app.register(authRoutes, { prefix: "/auth" });
+	app.register(userRoutes);
 
-const start = async () => {
-	try {
-		await server.listen(3000);
-
-		server.blipp();
-		server.swagger();
-	} catch (err) {
-		server.log.error(err);
-		process.exit(1);
-	}
+	return app;
 };
 
-start();
+export default build;

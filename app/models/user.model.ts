@@ -13,7 +13,7 @@ export const UserReply = Type.Object({
 });
 
 export const UserParams = Type.Object({
-	userId: Type.String(),
+	id: Type.String(),
 });
 
 export const UserRetrieve = Type.Omit(UserModel, ["password"]);

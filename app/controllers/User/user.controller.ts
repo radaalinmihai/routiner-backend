@@ -1,48 +1,30 @@
 import {
-	ContextConfigDefault,
-	RawReplyDefaultExpression,
-	RawRequestDefaultExpression,
-	RawServerBase,
-	RouteHandlerMethod,
-} from "fastify";
-import {
 	UserModel,
 	UserParams,
 	UserReply,
 	UserRetrieve,
 } from "../../models/user.model";
 import { handlePromise } from "../../common/helpers";
+import { RouteHandler } from "../../types/IHandler";
+import { IError } from "../../types/Errors";
 
-export const loginHandler: RouteHandlerMethod<
-	RawServerBase,
-	RawRequestDefaultExpression,
-	RawReplyDefaultExpression,
-	{ Body: UserModel; Reply: UserReply },
-	ContextConfigDefault
-> = (req, reply) => {
-	const { server, body } = req;
-	const { username, password } = body;
-	server.mysql
-		.query("SELECT * FROM users WHERE username=?", [username])
-		.then((res) => {
-			const [rows, fields] = res;
-			server.log.info("rows!~", rows, fields);
-			return reply.send({
-				access_token: "another access token lol",
-			});
-		})
-		.catch((err) => {
-			server.log.error(err);
+export const loginHandler: RouteHandler<{ Body: UserModel; Reply: UserReply }> =
+	async (req, reply) => {
+		const { server, body } = req;
+		const { username, password } = body;
+		const [error, res] = await handlePromise(
+			server.mysql.query("SELECT * FROM users WHERE username=?", [username]),
+		);
+		server.log.info(res);
+		return reply.send({
+			access_token: "sdfdsfgdfg",
 		});
-};
+	};
 
-export const registerHandler: RouteHandlerMethod<
-	RawServerBase,
-	RawRequestDefaultExpression,
-	RawReplyDefaultExpression,
-	{ Body: UserModel; Reply: UserReply },
-	ContextConfigDefault
-> = async (req, reply) => {
+export const registerHandler: RouteHandler<{
+	Body: UserModel;
+	Reply: UserReply;
+}> = async (req, reply) => {
 	const { server, body } = req;
 	const { username, email, password } = body;
 	const encryptedPassword = await server.bcrypt.hash(password);
@@ -56,20 +38,16 @@ export const registerHandler: RouteHandlerMethod<
 	});
 };
 
-export const getUserHandler: RouteHandlerMethod<
-	RawServerBase,
-	RawRequestDefaultExpression,
-	RawReplyDefaultExpression,
-	{ Reply: UserRetrieve; Params: UserParams },
-	ContextConfigDefault
-> = async (req, reply) => {
+export const getUserHandler: RouteHandler<{
+	Reply: UserRetrieve;
+	Params: UserParams;
+}> = async (req, reply) => {
 	const { server } = req;
-	server.log.info("QUERY", req.params);
-	const { userId } = req.params;
+	const { id } = req.params;
 	const [error, userData] = await handlePromise(
 		server.mysql.execute(
 			"SELECT username, email, id, userId FROM users WHERE userId=?",
-			[userId],
+			[id],
 		),
 	);
 	if (error) {
@@ -77,7 +55,11 @@ export const getUserHandler: RouteHandlerMethod<
 	}
 	const [rows] = userData;
 	if (!rows.length) {
-		throw new Error(`No user with id ${userId}`);
+		const err: IError = {
+			...new Error(`No user with id ${id}`),
+			statusCode: 404,
+		};
+		throw err;
 	}
 	server.log.info(rows);
 	reply.send(rows[0]);

@@ -4,9 +4,8 @@ import userOptions from "../schemas/user.schema";
 import { UserParams, UserRetrieve } from "../models/user.model";
 
 export default async function userRoutes(fastify: FastifyInstance) {
-	fastify.get<{ Reply: UserRetrieve; Params: UserParams }>(
-		"/user/:userId",
-		userOptions,
-		getUserHandler,
-	);
+	fastify.get<{
+		Reply: UserRetrieve;
+		Params: UserParams;
+	}>("/user/:id", userOptions, getUserHandler);
 }

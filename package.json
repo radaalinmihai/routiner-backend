@@ -2,22 +2,24 @@
   "name": "routiner-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/app/main.js",
+  "main": "dist/app/server.js",
   "scripts": {
     "prestart": "npm run build",
     "postinstall": "npm run build",
     "build": "tsc -p tsconfig.json",
-    "start": "node --inspect=5858 -r ts-node/register ./app/main.ts",
+    "start": "node --inspect=5858 -r ts-node/register app/server.ts",
     "start:watch": "nodemon",
     "lint": "eslint ./app",
     "lint:fix": "eslint ./app --fix",
-    "test": "npm run lint:fix"
+    "lint:test": "npm run lint:fix",
+    "test:watch": "tap --watch --ts"
   },
   "keywords": [],
   "author": "Rada Alin Mihai",
   "license": "ISC",
   "dependencies": {
     "@sinclair/typebox": "^0.20.5",
+    "@types/tap": "^15.0.5",
     "fastify": "^3.21.1",
     "fastify-auth": "^1.1.0",
     "fastify-bearer-auth": "^6.0.0",
@@ -39,8 +41,9 @@
     "eslint-plugin-prettier": "^4.0.0",
     "husky": "^7.0.0",
     "nodemon": "^2.0.12",
-    "pino-pretty": "^7.0.1",
+    "pino-pretty": "^7.2.0",
     "prettier": "^2.4.1",
+    "tap": "^15.1.5",
     "ts-node": "^10.2.1",
     "typescript": "^4.4.3"
   }

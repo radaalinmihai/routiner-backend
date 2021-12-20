@@ -5,7 +5,7 @@ import {
 	RawServerBase,
 	RouteShorthandOptions,
 } from "fastify";
-import { UserModel, UserParams, UserRetrieve } from "../models/user.model";
+import { UserParams, UserRetrieve } from "../models/user.model";
 
 const userOptions: RouteShorthandOptions<
 	RawServerBase,
@@ -17,7 +17,7 @@ const userOptions: RouteShorthandOptions<
 	schema: {
 		tags: ["User"],
 		querystring: {
-			userId: { type: "string" },
+			id: { type: "string" },
 		},
 		response: {
 			200: UserRetrieve,
