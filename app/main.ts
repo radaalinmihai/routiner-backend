@@ -1,23 +1,52 @@
 import fastify, { FastifyServerOptions } from "fastify";
 import fastifyBlipp from "fastify-blipp";
 import authRoutes from "./routes/auth.route";
-import dotenv from "./plugins/dotenv";
 import mysqlInstance from "./plugins/mysql";
-import fastifySwagger from "fastify-swagger";
+import fastifySwagger from "@fastify/swagger";
 import { swaggerConfig } from "./common/config";
-import fastifyBcrypt from "./plugins/bcrypt";
+import jwtInstance from "./plugins/jwt";
 import userRoutes from "./routes/user.route";
+import fastifyBcrypt from "fastify-bcrypt";
+import Ajv from "ajv";
+import addFormats from "ajv-formats";
+import dotenv from "./plugins/dotenv";
 
-const build = (options?: FastifyServerOptions) => {
-	const app = fastify(options);
+const build = (options: FastifyServerOptions) => {
+	const app = fastify(options).withTypeProvider();
 
-	app.register(fastifyBlipp);
+	const ajv = addFormats(new Ajv({}), [
+		"date-time",
+		"time",
+		"date",
+		"email",
+		"hostname",
+		"ipv4",
+		"ipv6",
+		"uri",
+		"uri-reference",
+		"uuid",
+		"uri-template",
+		"json-pointer",
+		"relative-json-pointer",
+		"regex",
+	])
+		.addKeyword("kind")
+		.addKeyword("modifier");
+
 	app.register(dotenv);
+	app.register(fastifyBlipp);
 	app.register(mysqlInstance);
-	app.register(fastifyBcrypt, { saltWorkFactor: 16 });
+	app.register(fastifyBcrypt, {
+		saltWorkFactor: 12,
+	});
+	app.register(jwtInstance);
 	app.register(fastifySwagger, swaggerConfig);
 	app.register(authRoutes, { prefix: "/auth" });
-	app.register(userRoutes);
+	app.register(userRoutes, { prefix: "/user" });
+
+	app.setValidatorCompiler(({ schema }) => {
+		return ajv.compile(schema);
+	});
 
 	return app;
 };

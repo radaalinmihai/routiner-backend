@@ -3,13 +3,21 @@ import build from "./main";
 const server = build({
 	logger: {
 		level: "info",
-		prettyPrint: true,
+		transport: {
+			target: "pino-pretty",
+			options: {
+				translateTime: "HH:MM:ss Z",
+				ignore: "pid,hostname",
+			},
+		},
 	},
 });
 
 const start = async () => {
 	try {
-		await server.listen(3000);
+		await server.listen({
+			port: 4000,
+		});
 		server.blipp();
 		server.swagger();
 	} catch (err) {

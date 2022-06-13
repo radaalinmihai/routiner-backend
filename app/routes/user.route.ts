@@ -1,11 +1,19 @@
 import { FastifyInstance } from "fastify";
-import { getUserHandler } from "../controllers/User/user.controller";
-import userOptions from "../schemas/user.schema";
-import { UserParams, UserRetrieve } from "../models/user.model";
+import {
+	deleteUserHandler,
+	getUserHandler,
+	patchUserHandler,
+} from "../controllers/User/user.controller";
+import {
+	getUserOptions,
+	deleteUserOptions,
+	patchUserOptions,
+} from "../schemas/user.schema";
+import authenticationMiddleware from "../middlewares/authentication";
 
 export default async function userRoutes(fastify: FastifyInstance) {
-	fastify.get<{
-		Reply: UserRetrieve;
-		Params: UserParams;
-	}>("/user/:id", userOptions, getUserHandler);
+	fastify.addHook("onRequest", authenticationMiddleware(fastify));
+	fastify.get("/:id", getUserOptions, getUserHandler);
+	fastify.patch("/:id", patchUserOptions, patchUserHandler);
+	fastify.delete("/:id", deleteUserOptions, deleteUserHandler);
 }
