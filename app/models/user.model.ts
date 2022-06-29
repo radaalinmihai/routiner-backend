@@ -20,7 +20,7 @@ export const UserParams = Type.Object({
 
 export const UserRetrieve = Type.Omit(UserModel, ["password"]);
 
-export type UserModel = Static<typeof UserModel>;
+export type UserModel = Static<typeof UserModel> & RowDataPacket;
 export type UserRetrieve = Static<typeof UserRetrieve> & RowDataPacket;
 export type UserReply = Static<typeof UserReply>;
 export type UserParams = Static<typeof UserParams>;

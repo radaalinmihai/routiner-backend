@@ -45,29 +45,41 @@ export const registerHandler: RouteHandler<{
 }> = async (req, reply) => {
 	const { server, body } = req;
 	const { username, email, password } = body;
-	const encryptedPassword = await server.bcrypt.hash(password);
-	const [rows, fields] = await server.mysql.query(
-		"INSERT INTO users (username, password, email) VALUES (?, ?, ?)",
-		[username, encryptedPassword, email || null],
-	);
-	const [lastRow] = await server.mysql.query<RowDataPacket[]>(
-		"SELECT userId FROM users WHERE id=(SELECT last_insert_id())",
-	);
-	const token = server.jwt.sign(
-		{
-			email,
+	try {
+		const encryptedPassword = await server.bcrypt.hash(password);
+		await server.mysql.query("INSERT INTO users (username, password, email) VALUES (?, ?, ?)", [
 			username,
-			userId: lastRow[0].userId,
-		},
-		{
-			expiresIn: "7d",
-		},
-	);
-	console.log("!!!", lastRow);
-	reply.send({
-		message: "User registered successfully",
-		access_token: token,
-	});
+			encryptedPassword,
+			email,
+		]);
+		const [lastRow] = await server.mysql.query<UserModel[]>(
+			"SELECT userId FROM users WHERE id=(SELECT last_insert_id())",
+		);
+		const token = server.jwt.sign(
+			{
+				email,
+				username,
+				userId: lastRow[0].userId,
+			},
+			{
+				expiresIn: "7d",
+			},
+		);
+		return reply.send({
+			message: "User registered successfully",
+			access_token: token,
+		});
+	} catch (err: any) {
+		switch (err.code) {
+			case "ER_DUP_ENTRY":
+				return reply.code(400).send({
+					message: `An account with the following email '${email}' already exists. Please choose another one.`,
+				});
+		}
+		return reply.code(400).send({
+			message: "Wrong request",
+		});
+	}
 };
 
 export const getUserHandler: RouteHandler<{
