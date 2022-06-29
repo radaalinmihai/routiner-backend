@@ -8,12 +8,12 @@ export const loginHandler: RouteHandler<{ Body: UserModel; Reply: UserReply }> =
 ) => {
 	const { server, body } = req;
 	const [userRows] = await server.mysql.query<RowDataPacket[]>(
-		"SELECT * FROM users WHERE username=?",
-		[body.username],
+		"SELECT * FROM users WHERE email=?",
+		[body.email],
 	);
 	if (!userRows.length) {
 		return reply.code(404).send({
-			message: `No user with name ${body.username} found`,
+			message: `No user with email ${body.email} found`,
 		});
 	}
 	const userRow = userRows[0] as UserModel;
