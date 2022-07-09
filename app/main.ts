@@ -10,6 +10,8 @@ import fastifyBcrypt from "fastify-bcrypt";
 import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import dotenv from "./plugins/dotenv";
+import routineRoutes from "./routes/routine.route";
+import todoRoutes from "./routes/todo.route";
 
 const build = (options: FastifyServerOptions) => {
 	const app = fastify(options).withTypeProvider();
@@ -43,6 +45,8 @@ const build = (options: FastifyServerOptions) => {
 	app.register(fastifySwagger, swaggerConfig);
 	app.register(authRoutes, { prefix: "/auth" });
 	app.register(userRoutes, { prefix: "/user" });
+	app.register(routineRoutes, { prefix: "/routine" });
+	app.register(todoRoutes, { prefix: "/todo" });
 
 	app.setValidatorCompiler(({ schema }) => {
 		return ajv.compile(schema);
