@@ -9,9 +9,12 @@ export const TodoModel = Type.Object({
 	modified_at: Type.String(),
 });
 
+export const InsertToDoModel = Type.Pick(TodoModel, ["title", "description"]);
+
 export const ToDoParams = Type.Object({
 	id: Type.String(),
 });
 
 export type TodoModel = Static<typeof TodoModel> & RowDataPacket;
+export type InsertToDoModel = Static<typeof InsertToDoModel> & RowDataPacket;
 export type ToDoParams = Static<typeof ToDoParams>;

@@ -5,8 +5,8 @@ import {
 	RawServerBase,
 	RouteShorthandOptions,
 } from "fastify";
-import { TodoModel, ToDoParams } from "../models/todo.model";
-import { ErrorModel } from "../models/error.model";
+import { InsertToDoModel, TodoModel, ToDoParams } from "../models/todo.model";
+import { ErrorModel, SuccessModel } from "../models/general.model";
 
 export const getToDoOptions: RouteShorthandOptions<
 	RawServerBase,
@@ -16,7 +16,7 @@ export const getToDoOptions: RouteShorthandOptions<
 	ContextConfigDefault
 > = {
 	schema: {
-		tags: ["To do"],
+		tags: ["ToDo"],
 		security: [
 			{
 				bearerAuth: [],
@@ -29,6 +29,54 @@ export const getToDoOptions: RouteShorthandOptions<
 			200: TodoModel,
 			404: ErrorModel,
 			400: ErrorModel,
+			500: ErrorModel,
+		},
+	},
+};
+
+export const insertToDoOptions: RouteShorthandOptions<
+	RawServerBase,
+	RawRequestDefaultExpression,
+	RawReplyDefaultExpression,
+	{ Body: InsertToDoModel },
+	ContextConfigDefault
+> = {
+	schema: {
+		tags: ["ToDo"],
+		security: [
+			{
+				bearerAuth: [],
+			},
+		],
+		body: InsertToDoModel,
+		response: {
+			200: TodoModel,
+			404: ErrorModel,
+			400: ErrorModel,
+			500: ErrorModel,
+		},
+	},
+};
+
+export const deleteToDoOptions: RouteShorthandOptions<
+	RawServerBase,
+	RawRequestDefaultExpression,
+	RawReplyDefaultExpression,
+	any,
+	ContextConfigDefault
+> = {
+	schema: {
+		tags: ["ToDo"],
+		security: [
+			{
+				bearerAuth: [],
+			},
+		],
+		response: {
+			200: SuccessModel,
+			404: ErrorModel,
+			400: ErrorModel,
+			500: ErrorModel,
 		},
 	},
 };

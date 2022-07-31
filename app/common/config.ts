@@ -21,6 +21,7 @@ export const schemaEnv = {
 		},
 		DATABASE_HOST: {
 			type: "string",
+			default: "localhost",
 		},
 		JWT_SECRET: {
 			type: "string",
@@ -38,7 +39,7 @@ export const swaggerConfig: SwaggerOptions = {
 	routePrefix: "/api-docs",
 	exposeRoute: true,
 	openapi: {
-		tags: [{ name: "Auth" }, { name: "Routines" }, { name: "User" }],
+		tags: [{ name: "Auth" }, { name: "Routines" }, { name: "User" }, { name: "ToDo" }],
 		info: {
 			title: "Test",
 			description: "",
@@ -53,6 +54,17 @@ export const swaggerConfig: SwaggerOptions = {
 						username: { type: "string" },
 						password: { type: "string", format: "password" },
 						email: { type: "string", format: "email" },
+					},
+				},
+				ToDo: {
+					type: "object",
+					required: ["title", "description"],
+					properties: {
+						id: { type: "string" },
+						title: { type: "string" },
+						description: { type: "string" },
+						created_at: { type: "string" },
+						modified_at: { type: "string" },
 					},
 				},
 			},

@@ -15,6 +15,7 @@ async function mysqlInstance(fastify: FastifyInstance) {
 			password: DATABASE_PASSWORD,
 			promise: true,
 			enableKeepAlive: true,
+			multipleStatements: true,
 		});
 	} catch (err) {
 		fastify.log.error(err);

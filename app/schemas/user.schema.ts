@@ -6,7 +6,7 @@ import {
 	RouteShorthandOptions,
 } from "fastify";
 import { UserModel, UserParams, UserRetrieve } from "../models/user.model";
-import { ErrorModel } from "../models/error.model";
+import { ErrorModel } from "../models/general.model";
 import { Type } from "@sinclair/typebox";
 
 export const getUserOptions: RouteShorthandOptions<

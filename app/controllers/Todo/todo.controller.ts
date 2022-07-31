@@ -1,5 +1,7 @@
 import { RouteHandler } from "../../types/IHandler";
-import { TodoModel, ToDoParams } from "../../models/todo.model";
+import { InsertToDoModel, TodoModel, ToDoParams } from "../../models/todo.model";
+import { ResponseCodes } from "../../models/general.model";
+import { ResultSetHeader } from "mysql2";
 
 export const getToDoHandler: RouteHandler<{ Params: ToDoParams }> = async (request, reply) => {
 	const { server } = request;
@@ -20,4 +22,52 @@ export const getToDoHandler: RouteHandler<{ Params: ToDoParams }> = async (reque
 		});
 	}
 	return reply.send(todoItems[0]);
+};
+
+export const insertToDoHandler: RouteHandler<{ Body: InsertToDoModel }> = async (
+	request,
+	reply,
+) => {
+	const { server, body } = request;
+	const { title, description } = body;
+	try {
+		const [[, , toDo]] = await server.mysql.query<[any, any, TodoModel[]]>(
+			"SET @lastId=UUID(); INSERT INTO todos (`id`, `title`, `description`, `created_at`) VALUES(@lastId, ?, ?, NOW()); SELECT * FROM todos WHERE id=@lastId;",
+			[title, description],
+		);
+		return reply.code(200).send(toDo[0]);
+	} catch (err) {
+		server.log.error(err);
+		return reply.code(500).send({
+			message: "Something bad happened",
+		});
+	}
+};
+
+export const deleteToDoHandler: RouteHandler<{ Params: ToDoParams }> = async (request, reply) => {
+	const { server, params } = request;
+	const { id } = params;
+	if (!id) {
+		return reply.code(400).send({
+			message: "id parameter is missing",
+		});
+	}
+	try {
+		const [info] = await server.mysql.query<ResultSetHeader>("DELETE FROM todos WHERE `id`=?", [
+			id,
+		]);
+		if (!info.affectedRows) {
+			return reply.code(404).send({
+				message: `No TODO found with id '${id}' found.`,
+			});
+		}
+		return reply.code(200).send({
+			status: ResponseCodes.OK,
+			message: "Successfully deleted TODO",
+		});
+	} catch (err) {
+		return reply.code(500).send({
+			message: "Something bad happened",
+		});
+	}
 };
