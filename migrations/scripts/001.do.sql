@@ -19,3 +19,29 @@ CREATE TABLE `todos` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
 );
+
+-- create routines table
+
+CREATE TABLE `routines` (
+	`id` varchar(40) NOT NULL DEFAULT (UUID()),
+	`title` varchar(20) NOT NULL,
+	`description` VARCHAR(235) DEFAULT '',
+
+	`start_date` DATETIME NOT NULL,
+	`end_date` DATETIME NOT NULL,
+
+	`created_at` DATETIME NOT NULL,
+	`modified_at` DATETIME NOT NULL DEFAULT (NOW()),
+
+	PRIMARY KEY (`id`),
+	UNIQUE KEY `id` (`id`)
+);
+
+-- create relation table
+CREATE TABLE `routines_todos` (
+	`id` VARCHAR(40) NOT NULL DEFAULT (UUID()),
+	`routine_id` VARCHAR(40) NOT NULL,
+	`todo_id` VARCHAR(40) NOT NULL,
+	PRIMARY KEY (`id`),
+	UNIQUE KEY `id` (`id`)
+);

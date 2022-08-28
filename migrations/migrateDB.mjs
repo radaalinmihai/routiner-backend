@@ -9,7 +9,7 @@ async function migrateDB() {
 	const client = mysql.createConnection({
 		multipleStatements: true,
 		host: "localhost",
-		user: "root",
+		user: "alin",
 		database: "routiner",
 		password: "wingmanomul",
 	});
