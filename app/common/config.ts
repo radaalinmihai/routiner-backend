@@ -39,7 +39,7 @@ export const swaggerConfig: SwaggerOptions = {
 	routePrefix: "/api-docs",
 	exposeRoute: true,
 	openapi: {
-		tags: [{ name: "Auth" }, { name: "Routines" }, { name: "User" }, { name: "ToDo" }],
+		tags: [{ name: "Auth" }, { name: "User" }, { name: "Routine" }, { name: "ToDo" }],
 		info: {
 			title: "Test",
 			description: "",

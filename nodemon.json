@@ -1,5 +1,6 @@
 {
+  "verbose": false,
   "watch": ["app"],
   "ext": "ts",
-  "exec": "npm start"
+  "exec": "node -r ts-node/register app/server.ts"
 }
