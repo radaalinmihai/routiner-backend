@@ -16,7 +16,7 @@ CREATE TABLE `todos` (
   `description` varchar(64) DEFAULT '',
   `created_at` datetime NOT NULL,
   `modified_at` datetime NOT NULL DEFAULT (now()),
-  `routine_id` varchar(40) NOT NULL,
+  `routine_id` varchar(40),
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
 );

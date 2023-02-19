@@ -5,8 +5,8 @@ import {
 	RawServerBase,
 	RouteShorthandOptions,
 } from "fastify";
-import { InsertToDoModel, TodoModel, ToDoParams } from "../models/todo.model";
-import { ErrorModel, SuccessModel } from "../models/general.model";
+import { InsertToDoModel, TodoModel, ToDoParams } from "../models/todo.model.js";
+import { ErrorModel, SuccessModel } from "../models/general.model.js";
 
 export const getToDoOptions: RouteShorthandOptions<
 	RawServerBase,

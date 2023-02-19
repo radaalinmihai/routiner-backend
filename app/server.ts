@@ -1,4 +1,4 @@
-import build from "./main";
+import build from "./main.js";
 
 const server = build({
 	logger: {

@@ -5,8 +5,8 @@ import {
 	RawServerBase,
 	RouteShorthandOptions,
 } from "fastify";
-import { UserModel, UserParams, UserRetrieve } from "../models/user.model";
-import { ErrorModel } from "../models/general.model";
+import { UserModel, UserParams, UserRetrieve } from "../models/user.model.js";
+import { ErrorModel } from "../models/general.model.js";
 import { Type } from "@sinclair/typebox";
 
 export const getUserOptions: RouteShorthandOptions<

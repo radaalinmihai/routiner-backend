@@ -2,5 +2,5 @@
   "verbose": false,
   "watch": ["app"],
   "ext": "ts",
-  "exec": "node -r ts-node/register app/server.ts"
+  "exec": "ts-node --esm ./app/server.ts"
 }

@@ -1,11 +1,11 @@
 {
 	"compilerOptions": {
-		"target": "ESNext",
-		"module": "commonjs",
-		"moduleResolution": "node",
-		"esModuleInterop": true,
+		"target": "ES2017",
+		"module": "Node16",
+		"moduleResolution": "node16",
         "forceConsistentCasingInFileNames": true,
-		"strict": true,
+        "esModuleInterop": true,
+        "strict": true,
 		"noEmit": true,
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
@@ -13,11 +13,12 @@
 		"outDir": "dist",
 		"baseUrl": ".",
 		"types": ["node"],
-		"lib": ["es2021"],
+		"lib": ["ES2020"],
+        "allowJs": true
 	},
 	"ts-node": {
-		"files": true
+      "files": true
 	},
 	"exclude": ["node_modules", "migrations"],
-	"include": ["app/**/*"]
+	"include": ["app/**/*"],
 }

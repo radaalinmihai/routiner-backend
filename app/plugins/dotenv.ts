@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import fastifyEnv from "@fastify/env";
-import { envConfig } from "../common/config";
+import { envConfig } from "../common/config.js";
 import fp from "fastify-plugin";
 
 async function dotenv(fastify: FastifyInstance) {
@@ -11,6 +11,8 @@ async function dotenv(fastify: FastifyInstance) {
 	}
 }
 
-export default fp(dotenv, {
+const dotEnvPlugin = fp(dotenv, {
 	name: "envInstance",
 });
+
+export { dotEnvPlugin as default };

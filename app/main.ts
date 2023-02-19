@@ -1,48 +1,49 @@
 import fastify, { FastifyServerOptions } from "fastify";
 import fastifyBlipp from "fastify-blipp";
-import authRoutes from "./routes/auth.route";
-import mysqlInstance from "./plugins/mysql";
+import authRoutes from "./routes/auth.route.js";
+import mysqlInstance from "./plugins/mysql.js";
 import fastifySwagger from "@fastify/swagger";
-import { swaggerConfig } from "./common/config";
-import jwtInstance from "./plugins/jwt";
-import userRoutes from "./routes/user.route";
+import { swaggerConfig } from "./common/config.js";
+import jwtInstance from "./plugins/jwt.js";
+import userRoutes from "./routes/user.route.js";
 import fastifyBcrypt from "fastify-bcrypt";
 import Ajv from "ajv";
 import addFormats from "ajv-formats";
-import dotenv from "./plugins/dotenv";
-import routineRoutes from "./routes/routine.route";
-import todoRoutes from "./routes/todo.route";
+import dotenv from "./plugins/dotenv.js";
+import routineRoutes from "./routes/routine.route.js";
+import todoRoutes from "./routes/todo.route.js";
 
 const build = (options: FastifyServerOptions) => {
 	const app = fastify(options).withTypeProvider();
 
-	const ajv = addFormats(new Ajv({}), [
-		"date-time",
-		"time",
-		"date",
-		"email",
-		"hostname",
-		"ipv4",
-		"ipv6",
-		"uri",
-		"uri-reference",
-		"uuid",
-		"uri-template",
-		"json-pointer",
-		"relative-json-pointer",
-		"regex",
-	])
+	const ajv = addFormats
+		.default(new Ajv.default({}), [
+			"date-time",
+			"time",
+			"date",
+			"email",
+			"hostname",
+			"ipv4",
+			"ipv6",
+			"uri",
+			"uri-reference",
+			"uuid",
+			"uri-template",
+			"json-pointer",
+			"relative-json-pointer",
+			"regex",
+		])
 		.addKeyword("kind")
 		.addKeyword("modifier");
 
 	app.register(dotenv);
-	app.register(fastifyBlipp);
+	app.register(fastifyBlipp.default);
 	app.register(mysqlInstance);
-	app.register(fastifyBcrypt, {
+	app.register(fastifyBcrypt.default, {
 		saltWorkFactor: 12,
 	});
 	app.register(jwtInstance);
-	app.register(fastifySwagger, swaggerConfig);
+	app.register(fastifySwagger.default, swaggerConfig);
 	app.register(authRoutes, { prefix: "/auth" });
 	app.register(userRoutes, { prefix: "/user" });
 	app.register(routineRoutes, { prefix: "/routine" });

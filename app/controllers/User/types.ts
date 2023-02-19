@@ -5,7 +5,7 @@ import {
 	RawServerDefault,
 	RouteHandlerMethod,
 } from "fastify";
-import { UserModel, UserReply } from "../../models/user.model";
+import { UserModel, UserReply } from "../../models/user.model.js";
 
 export default interface UserTypes {
 	login: RouteHandlerMethod<

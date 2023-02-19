@@ -16,5 +16,6 @@ export const ToDoParams = Type.Object({
 });
 
 export type TodoModel = Static<typeof TodoModel> & RowDataPacket;
-export type InsertToDoModel = Static<typeof InsertToDoModel> & RowDataPacket;
+export type InsertToDoModel = Static<typeof InsertToDoModel & { routine_id?: string }> &
+	RowDataPacket;
 export type ToDoParams = Static<typeof ToDoParams>;

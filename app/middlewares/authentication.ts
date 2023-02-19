@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
-import { onRequestHookHandler } from "fastify/types/hooks";
-import { UserJWT } from "../models/user.model";
+import { onRequestHookHandler } from "fastify/types/hooks.js";
+import { UserJWT } from "../models/user.model.js";
 
 const authenticationMiddleware =
 	(fastify: FastifyInstance): onRequestHookHandler =>

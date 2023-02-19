@@ -1,5 +1,5 @@
-import { UserModel, UserParams, UserReply, UserRetrieve } from "../../models/user.model";
-import { RouteHandler } from "../../types/IHandler";
+import { UserModel, UserParams, UserReply, UserRetrieve } from "../../models/user.model.js";
+import { RouteHandler } from "../../types/IHandler.js";
 import { RowDataPacket, OkPacket } from "mysql2";
 
 export const loginHandler: RouteHandler<{ Body: UserModel; Reply: UserReply }> = async (

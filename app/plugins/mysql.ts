@@ -22,7 +22,9 @@ async function mysqlInstance(fastify: FastifyInstance) {
 	}
 }
 
-export default fp(mysqlInstance, {
+const mysqlPlugin = fp(mysqlInstance, {
 	name: "mysqlInstance",
 	dependencies: ["envInstance"],
 });
+
+export { mysqlPlugin as default };

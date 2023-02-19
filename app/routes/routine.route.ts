@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
-import authenticationMiddleware from "../middlewares/authentication";
-import { getRoutine, insertRoutineHandler } from "../controllers/Routine/routine.controller";
-import { getRouteOptions, insertRoutineOptions } from "../schemas/routine.schema";
+import authenticationMiddleware from "../middlewares/authentication.js";
+import { getRoutine, insertRoutineHandler } from "../controllers/Routine/routine.controller.js";
+import { getRouteOptions, insertRoutineOptions } from "../schemas/routine.schema.js";
 
 export default async function routineRoutes(fastify: FastifyInstance) {
 	fastify.addHook("onRequest", authenticationMiddleware(fastify));

@@ -1,6 +1,6 @@
-import { RouteHandler } from "../../types/IHandler";
-import { InsertToDoModel, TodoModel, ToDoParams } from "../../models/todo.model";
-import { ResponseCodes } from "../../models/general.model";
+import { RouteHandler } from "../../types/IHandler.js";
+import { InsertToDoModel, TodoModel, ToDoParams } from "../../models/todo.model.js";
+import { ResponseCodes } from "../../models/general.model.js";
 import { ResultSetHeader } from "mysql2";
 
 export const getToDoHandler: RouteHandler<{ Params: ToDoParams }> = async (request, reply) => {
@@ -29,11 +29,16 @@ export const insertToDoHandler: RouteHandler<{ Body: InsertToDoModel }> = async 
 	reply,
 ) => {
 	const { server, body } = request;
-	const { title, description } = body;
+	const { title, description, routine_id } = body;
 	try {
 		const [[, , toDo]] = await server.mysql.query<[any, any, TodoModel[]]>(
-			"SET @lastId=UUID(); INSERT INTO todos (`id`, `title`, `description`, `created_at`) VALUES(@lastId, ?, ?, NOW()); SELECT * FROM todos WHERE id=@lastId;",
-			[title, description],
+			`
+			SET @lastId=UUID(); 
+			INSERT INTO todos (id, title, description, created_at, routine_id) 
+			VALUES(@lastId, ?, ?, NOW(), ?)); 
+			SELECT * FROM todos WHERE id=@lastId;
+			`,
+			[title, description, routine_id],
 		);
 		return reply.code(200).send(toDo[0]);
 	} catch (err) {

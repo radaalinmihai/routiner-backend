@@ -1,6 +1,6 @@
 import { Static, Type } from "@sinclair/typebox";
 import { RowDataPacket } from "mysql2";
-import { TodoModel } from "./todo.model";
+import { TodoModel } from "./todo.model.js";
 
 export const RoutineModel = Type.Object({
 	id: Type.String(),
@@ -18,6 +18,7 @@ export const InsertRoutineModel = Type.Pick(RoutineModel, [
 	"description",
 	"start_date",
 	"end_date",
+	"todos",
 ]);
 
 export const RoutineParams = Type.Object({

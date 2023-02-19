@@ -1,11 +1,11 @@
 import { FastifyInstance } from "fastify";
-import authenticationMiddleware from "../middlewares/authentication";
+import authenticationMiddleware from "../middlewares/authentication.js";
 import {
 	deleteToDoHandler,
 	getToDoHandler,
 	insertToDoHandler,
-} from "../controllers/Todo/todo.controller";
-import { deleteToDoOptions, getToDoOptions, insertToDoOptions } from "../schemas/todo.schema";
+} from "../controllers/Todo/todo.controller.js";
+import { deleteToDoOptions, getToDoOptions, insertToDoOptions } from "../schemas/todo.schema.js";
 
 export default async function todoRoutes(fastify: FastifyInstance) {
 	// fastify.addHook("onRequest", authenticationMiddleware(fastify));

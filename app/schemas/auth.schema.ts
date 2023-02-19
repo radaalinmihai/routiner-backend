@@ -1,5 +1,5 @@
 import { RouteShorthandOptions } from "fastify";
-import { UserReply } from "../models/user.model";
+import { UserReply } from "../models/user.model.js";
 
 const authOptions: RouteShorthandOptions = {
 	schema: {

@@ -3,9 +3,9 @@ import {
 	deleteUserHandler,
 	getUserHandler,
 	patchUserHandler,
-} from "../controllers/User/user.controller";
-import { getUserOptions, deleteUserOptions, patchUserOptions } from "../schemas/user.schema";
-import authenticationMiddleware from "../middlewares/authentication";
+} from "../controllers/User/user.controller.js";
+import { getUserOptions, deleteUserOptions, patchUserOptions } from "../schemas/user.schema.js";
+import authenticationMiddleware from "../middlewares/authentication.js";
 
 export default async function userRoutes(fastify: FastifyInstance) {
 	fastify.addHook("onRequest", authenticationMiddleware(fastify));

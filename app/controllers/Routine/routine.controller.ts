@@ -1,6 +1,7 @@
-import { RouteHandler } from "../../types/IHandler";
-import { InsertRoutineModel, RoutineModel, RoutineParams } from "../../models/routine.model";
-import { TodoModel } from "../../models/todo.model";
+import { RouteHandler } from "../../types/IHandler.js";
+import { InsertRoutineModel, RoutineModel, RoutineParams } from "../../models/routine.model.js";
+import { TodoModel } from "../../models/todo.model.js";
+import got from "got";
 
 export const getRoutine: RouteHandler<{ Params: RoutineParams }> = async (request, reply) => {
 	const { routineId } = request.params;
@@ -41,7 +42,7 @@ export const insertRoutineHandler: RouteHandler<{ Body: InsertRoutineModel }> = 
 	reply,
 ) => {
 	const { server, body } = request;
-	const { title, description, start_date, end_date } = body;
+	const { title, description, start_date, end_date, todos } = body;
 	try {
 		const isoStartDate = new Date(start_date).toISOString().replace(/T.+/, "");
 		const isoEndDate = new Date(end_date).toISOString().replace(/T.+/, "");
@@ -51,10 +52,14 @@ export const insertRoutineHandler: RouteHandler<{ Body: InsertRoutineModel }> = 
 				INSERT INTO routines (id, title, description, start_date, end_date, created_at)
 				VALUES (@lastId, ?, ?, ?, ?, NOW());
 				SELECT * FROM routines WHERE id=@lastId;
-			`.replace(/\n\t/gm, ""),
+			`,
 			[title, description, isoStartDate, isoEndDate],
 		);
-		server.log.info(routines);
+		if (todos.length) {
+			got.post("/todo", {
+				json: todos,
+			});
+		}
 		return reply.code(200).send(routines[0]);
 	} catch (err) {
 		server.log.error(err);
