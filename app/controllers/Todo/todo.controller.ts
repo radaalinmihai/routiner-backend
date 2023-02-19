@@ -32,12 +32,7 @@ export const insertToDoHandler: RouteHandler<{ Body: InsertToDoModel }> = async 
 	const { title, description, routine_id } = body;
 	try {
 		const [[, , toDo]] = await server.mysql.query<[any, any, TodoModel[]]>(
-			`
-			SET @lastId=UUID(); 
-			INSERT INTO todos (id, title, description, created_at, routine_id) 
-			VALUES(@lastId, ?, ?, NOW(), ?)); 
-			SELECT * FROM todos WHERE id=@lastId;
-			`,
+			"SET @lastId=UUID();INSERT INTO todos (`id`, `title`, `description`, `created_at`, `modified_at`, `routine_id`) VALUES(@lastId, ?, ?, NOW(), NOW(), ?);SELECT * FROM todos WHERE `id`=@lastId;",
 			[title, description, routine_id],
 		);
 		return reply.code(200).send(toDo[0]);

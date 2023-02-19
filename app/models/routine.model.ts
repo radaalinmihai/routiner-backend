@@ -10,7 +10,7 @@ export const RoutineModel = Type.Object({
 	start_date: Type.String(),
 	end_date: Type.String(),
 	modified_at: Type.String(),
-	todos: Type.Array(TodoModel),
+	todos: Type.Optional(Type.Array(Type.Omit(TodoModel, ["id", "created_at", "modified_at"]))),
 });
 
 export const InsertRoutineModel = Type.Pick(RoutineModel, [

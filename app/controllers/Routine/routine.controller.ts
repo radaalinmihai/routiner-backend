@@ -41,12 +41,12 @@ export const insertRoutineHandler: RouteHandler<{ Body: InsertRoutineModel }> = 
 	request,
 	reply,
 ) => {
-	const { server, body } = request;
+	const { server, body, hostname, protocol } = request;
 	const { title, description, start_date, end_date, todos } = body;
 	try {
 		const isoStartDate = new Date(start_date).toISOString().replace(/T.+/, "");
 		const isoEndDate = new Date(end_date).toISOString().replace(/T.+/, "");
-		const [[, , routines]] = await server.mysql.query<[any, any, RoutineModel[]]>(
+		const [[, , routines]] = await server.mysql.query<[unknown, any, RoutineModel[]]>(
 			`
 				SET @lastId=UUID();
 				INSERT INTO routines (id, title, description, start_date, end_date, created_at)
@@ -55,12 +55,22 @@ export const insertRoutineHandler: RouteHandler<{ Body: InsertRoutineModel }> = 
 			`,
 			[title, description, isoStartDate, isoEndDate],
 		);
-		if (todos.length) {
-			got.post("/todo", {
-				json: todos,
-			});
+		const routine = routines[0];
+		if (todos?.length) {
+			try {
+				const todoRequests = await Promise.all(
+					todos.map(async (todo) => {
+						return got.post(`${protocol}://${hostname}/todo`, {
+							json: { ...todo, routine_id: routine.id },
+						});
+					}),
+				);
+				server.log.info(JSON.parse(todoRequests[0].body));
+			} catch (err) {
+				server.log.error(err);
+			}
 		}
-		return reply.code(200).send(routines[0]);
+		return reply.code(200).send({ ...routine, todos: todos || [] });
 	} catch (err) {
 		server.log.error(err);
 		return reply.code(500).send({
