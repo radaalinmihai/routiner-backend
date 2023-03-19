@@ -1,5 +1,4 @@
 import fastify, { FastifyServerOptions } from "fastify";
-import fastifyBlipp from "fastify-blipp";
 import authRoutes from "./routes/auth.route.js";
 import mysqlInstance from "./plugins/mysql.js";
 import fastifySwagger from "@fastify/swagger";
@@ -12,6 +11,7 @@ import addFormats from "ajv-formats";
 import dotenv from "./plugins/dotenv.js";
 import routineRoutes from "./routes/routine.route.js";
 import todoRoutes from "./routes/todo.route.js";
+import fastifyBlipp from "fastify-blipp";
 
 const build = (options: FastifyServerOptions) => {
 	const app = fastify(options).withTypeProvider();
@@ -37,7 +37,7 @@ const build = (options: FastifyServerOptions) => {
 		.addKeyword("modifier");
 
 	app.register(dotenv);
-	app.register(fastifyBlipp.default);
+	app.register(fastifyBlipp);
 	app.register(mysqlInstance);
 	app.register(fastifyBcrypt.default, {
 		saltWorkFactor: 12,

@@ -2,6 +2,9 @@ import { Static, Type } from "@sinclair/typebox";
 import { RowDataPacket } from "mysql2";
 import { TodoModel } from "./todo.model.js";
 
+// TODO Make models for inserting and a base model
+export const RoutineTodo = TodoModel;
+
 export const RoutineModel = Type.Object({
 	id: Type.String(),
 	title: Type.String(),

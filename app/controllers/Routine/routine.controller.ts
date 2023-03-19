@@ -56,6 +56,7 @@ export const insertRoutineHandler: RouteHandler<{ Body: InsertRoutineModel }> = 
 			[title, description, isoStartDate, isoEndDate],
 		);
 		const routine = routines[0];
+		const realTodos: TodoModel[] = [];
 		if (todos?.length) {
 			try {
 				const todoRequests = await Promise.all(
@@ -65,12 +66,13 @@ export const insertRoutineHandler: RouteHandler<{ Body: InsertRoutineModel }> = 
 						});
 					}),
 				);
+				todoRequests.forEach((todo) => realTodos.push(JSON.parse(todo.body)));
 				server.log.info(JSON.parse(todoRequests[0].body));
 			} catch (err) {
 				server.log.error(err);
 			}
 		}
-		return reply.code(200).send({ ...routine, todos: todos || [] });
+		return reply.code(200).send({ ...routine, todos: realTodos || [] });
 	} catch (err) {
 		server.log.error(err);
 		return reply.code(500).send({
