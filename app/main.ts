@@ -12,6 +12,7 @@ import dotenv from "./plugins/dotenv.js";
 import routineRoutes from "./routes/routine.route.js";
 import todoRoutes from "./routes/todo.route.js";
 import fastifyBlipp from "fastify-blipp";
+import cors from "@fastify/cors";
 
 const build = (options: FastifyServerOptions) => {
 	const app = fastify(options).withTypeProvider();
@@ -44,6 +45,9 @@ const build = (options: FastifyServerOptions) => {
 	});
 	app.register(jwtInstance);
 	app.register(fastifySwagger.default, swaggerConfig);
+	app.register(cors, {
+		origin: "*",
+	});
 	app.register(authRoutes, { prefix: "/auth" });
 	app.register(userRoutes, { prefix: "/user" });
 	app.register(routineRoutes, { prefix: "/routine" });
