@@ -2,16 +2,18 @@ import mysql from "mysql2";
 import Postgrator from "postgrator";
 import {dirname, join} from "path";
 import {fileURLToPath} from "url";
+import dotenv from "dotenv";
+dotenv.config();
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 async function migrateDB() {
 	const client = mysql.createConnection({
 		multipleStatements: true,
-		host: "localhost",
-		user: "alin",
-		database: "routiner",
-		password: "wingmanomul",
+		host: process.env.DATABASE_HOST,
+		user: process.env.DATABASE_USERNAME,
+		database: process.env.DATABASE_NAME,
+		password: process.env.DATABASE_PASSWORD,
 	});
 
 	await client.connect();

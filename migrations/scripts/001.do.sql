@@ -9,20 +9,6 @@ CREATE TABLE `users` (
  UNIQUE KEY `uniqueEmail` (`email`)
 );
 
--- create todos table
-CREATE TABLE `todos` (
-  `id` varchar(40) NOT NULL DEFAULT (uuid()),
-  `title` varchar(32) NOT NULL,
-  `description` varchar(64) DEFAULT '',
-  `created_at` datetime NOT NULL,
-  `modified_at` datetime NOT NULL DEFAULT (now()),
-  `routine_id` varchar(40) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`),
-  KEY `fk_routine_id` (`routine_id`),
-  CONSTRAINT `fk_routine_id` FOREIGN KEY (`routine_id`) REFERENCES `routines` (`id`) ON DELETE SET NULL ON UPDATE SET NULL
-);
-
 -- create routines table
 
 CREATE TABLE `routines` (
@@ -35,4 +21,19 @@ CREATE TABLE `routines` (
   `modified_at` datetime NOT NULL DEFAULT (now()),
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
+);
+
+
+-- create todos table
+CREATE TABLE `todos` (
+  `id` varchar(40) NOT NULL DEFAULT (uuid()),
+  `title` varchar(32) NOT NULL,
+  `description` varchar(64) DEFAULT '',
+  `created_at` datetime NOT NULL,
+  `modified_at` datetime NOT NULL DEFAULT (now()),
+  `routine_id` varchar(40) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`),
+  KEY `fk_routine_id` (`routine_id`),
+  CONSTRAINT `fk_routine_id` FOREIGN KEY (`routine_id`) REFERENCES `routines` (`id`) ON DELETE SET NULL ON UPDATE SET NULL
 );
