@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@fastify/cors": "^8.2.1",
-    "@fastify/env": "^4.0.0",
+    "@fastify/env": "^4.2.0",
     "@fastify/jwt": "^6.5.0",
     "@fastify/mysql": "^4.1.0",
     "@fastify/swagger": "^7.3.0",
