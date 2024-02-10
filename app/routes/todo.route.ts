@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import authenticationMiddleware from "../middlewares/authentication.js";
+// import authenticationMiddleware from "../middlewares/authentication.js";
 import {
 	deleteToDoHandler,
 	getToDoHandler,

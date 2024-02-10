@@ -7,7 +7,6 @@ import {
 } from "fastify";
 import { InsertRoutineModel, RoutineModel, RoutineParams } from "../models/routine.model.js";
 import { ErrorModel } from "../models/general.model.js";
-import { RouteGenericInterface } from "fastify/types/route.js";
 
 export const insertRoutineOptions: RouteShorthandOptions<
 	RawServerBase,

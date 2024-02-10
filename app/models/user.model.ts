@@ -14,20 +14,13 @@ export const UserReply = Type.Object({
 	message: Type.String(),
 });
 
-export const UserParams = Type.Object({
-	id: Type.String(),
-});
-
 export const UserRetrieve = Type.Omit(UserModel, ["password"]);
 
 export type UserModel = Static<typeof UserModel> & RowDataPacket;
 export type UserRetrieve = Static<typeof UserRetrieve> & RowDataPacket;
 export type UserReply = Static<typeof UserReply>;
-export type UserParams = Static<typeof UserParams>;
 export type UserJWT = {
-	email?: string | null;
 	userId: string;
-	username: string;
 	iat: number;
 	exp: number;
 };

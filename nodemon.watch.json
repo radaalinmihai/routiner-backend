@@ -2,5 +2,5 @@
   "verbose": false,
   "watch": ["app"],
   "ext": "ts",
-  "exec": "ts-node --esm ./app/server.ts"
+  "exec": "node --loader ts-node/esm ./app/server.ts"
 }

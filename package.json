@@ -6,12 +6,11 @@
   "main": "dist/app/server.js",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "start": "ts-node --esm ./app/server.ts",
-    "start:smth": "node --inspect=5858 -r ts-node/register app/server.ts",
-    "start:watch": "nodemon --config ./nodemon.json",
+    "start": "node --loader ts-node/esm ./app/server.ts",
+    "start:debug": "nodemon --config nodemon.debug.json",
+    "start:watch": "nodemon --config nodemon.watch.json",
     "lint": "eslint ./app",
     "lint:fix": "eslint ./app --fix",
-    "lint:test": "npm run lint:fix",
     "test:watch": "tap --watch --ts",
     "migrate:all": "node migrations/migrateDB.mjs"
   },
@@ -42,8 +41,8 @@
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
     "@types/node": "^16.9.1",
-    "@typescript-eslint/eslint-plugin": "^5.2.0",
-    "@typescript-eslint/parser": "^5.2.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.0.3",
     "eslint": "^8.1.0",
@@ -56,7 +55,7 @@
     "pino-pretty": "^7.6.1",
     "prettier": "^2.4.1",
     "tap": "^15.1.5",
-    "ts-node": "^10.9.1",
-    "typescript": "^4.7.3"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
   }
 }

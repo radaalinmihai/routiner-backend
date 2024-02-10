@@ -3,9 +3,10 @@ import {
 	RawReplyDefaultExpression,
 	RawRequestDefaultExpression,
 	RawServerBase,
+	RouteGenericInterface,
 	RouteShorthandOptions,
 } from "fastify";
-import { UserModel, UserParams, UserRetrieve } from "../models/user.model.js";
+import { UserModel, UserRetrieve } from "../models/user.model.js";
 import { ErrorModel } from "../models/general.model.js";
 import { Type } from "@sinclair/typebox";
 
@@ -13,7 +14,7 @@ export const getUserOptions: RouteShorthandOptions<
 	RawServerBase,
 	RawRequestDefaultExpression,
 	RawReplyDefaultExpression,
-	{ Params: UserParams },
+	RouteGenericInterface,
 	ContextConfigDefault
 > = {
 	schema: {
@@ -37,7 +38,7 @@ export const deleteUserOptions: RouteShorthandOptions<
 	RawServerBase,
 	RawRequestDefaultExpression,
 	RawReplyDefaultExpression,
-	{ Params: UserParams },
+	RouteGenericInterface,
 	ContextConfigDefault
 > = {
 	schema: {
@@ -57,7 +58,7 @@ export const patchUserOptions: RouteShorthandOptions<
 	RawServerBase,
 	RawRequestDefaultExpression,
 	RawReplyDefaultExpression,
-	{ Params: UserParams; Body: Partial<UserModel> },
+	{ Body: Partial<UserModel> },
 	ContextConfigDefault
 > = {
 	schema: {

@@ -9,7 +9,7 @@ import authenticationMiddleware from "../middlewares/authentication.js";
 
 export default async function userRoutes(fastify: FastifyInstance) {
 	fastify.addHook("onRequest", authenticationMiddleware(fastify));
-	fastify.get("/:id", getUserOptions, getUserHandler);
-	fastify.patch("/:id", patchUserOptions, patchUserHandler);
-	fastify.delete("/:id", deleteUserOptions, deleteUserHandler);
+	fastify.get("/profile", getUserOptions, getUserHandler);
+	fastify.patch("/profile", patchUserOptions, patchUserHandler);
+	fastify.delete("/close", deleteUserOptions, deleteUserHandler);
 }
