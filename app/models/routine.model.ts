@@ -1,6 +1,7 @@
 import { Static, Type } from "@sinclair/typebox";
 import { RowDataPacket } from "mysql2";
 import { TodoModel } from "./todo.model.js";
+import { Nullable } from "../common/Nullable.js";
 
 // TODO Make models for inserting and a base model
 export const RoutineTodo = TodoModel;
@@ -24,6 +25,12 @@ export const InsertRoutineModel = Type.Pick(RoutineModel, [
 	"todos",
 ]);
 
+export const DeleteRoutineModel = Nullable(
+	Type.Object({
+		deleteTodos: Type.Optional(Type.Boolean({ default: false })),
+	}),
+);
+
 export const RoutineParams = Type.Object({
 	routineId: Type.String(),
 });
@@ -31,3 +38,4 @@ export const RoutineParams = Type.Object({
 export type RoutineModel = Static<typeof RoutineModel> & RowDataPacket;
 export type InsertRoutineModel = Static<typeof InsertRoutineModel> & RowDataPacket;
 export type RoutineParams = Static<typeof RoutineParams>;
+export type DeleteRoutineModel = Static<typeof DeleteRoutineModel>;

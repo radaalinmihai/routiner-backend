@@ -19,9 +19,11 @@ CREATE TABLE `routines` (
   `end_date` date NOT NULL,
   `created_at` datetime NOT NULL,
   `modified_at` datetime NOT NULL DEFAULT (now()),
+  `created_by` varchar(45) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
 );
+
 
 
 -- create todos table

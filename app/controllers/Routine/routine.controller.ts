@@ -1,7 +1,14 @@
 import { RouteHandler } from "../../types/IHandler.js";
-import { InsertRoutineModel, RoutineModel, RoutineParams } from "../../models/routine.model.js";
+import {
+	DeleteRoutineModel,
+	InsertRoutineModel,
+	RoutineModel,
+	RoutineParams,
+} from "../../models/routine.model.js";
 import { TodoModel } from "../../models/todo.model.js";
 import got from "got";
+import { ResponseCodes } from "../../models/general.model.js";
+import { OkPacket } from "mysql2";
 
 export const getRoutine: RouteHandler<{ Params: RoutineParams }> = async (request, reply) => {
 	const { routineId } = request.params;
@@ -30,7 +37,7 @@ export const getRoutine: RouteHandler<{ Params: RoutineParams }> = async (reques
 		}
 		return reply.send({ ...routines[0], todos });
 	} catch (err) {
-		console.error(err);
+		server.log.error(err);
 		return reply.code(500).send({
 			message: "Something went bad",
 		});
@@ -41,7 +48,7 @@ export const insertRoutineHandler: RouteHandler<{ Body: InsertRoutineModel }> = 
 	request,
 	reply,
 ) => {
-	const { server, body, hostname, protocol } = request;
+	const { server, body, hostname, protocol, user } = request;
 	const { title, description, start_date, end_date, todos } = body;
 	try {
 		const isoStartDate = new Date(start_date).toISOString().replace(/T.+/, "");
@@ -49,11 +56,11 @@ export const insertRoutineHandler: RouteHandler<{ Body: InsertRoutineModel }> = 
 		const [[, , routines]] = await server.mysql.query<[unknown, any, RoutineModel[]]>(
 			`
 				SET @lastId=UUID();
-				INSERT INTO routines (id, title, description, start_date, end_date, created_at)
-				VALUES (@lastId, ?, ?, ?, ?, NOW());
+				INSERT INTO routines (id, title, description, start_date, end_date, created_at, created_by)
+				VALUES (@lastId, ?, ?, ?, ?, NOW(), ?);
 				SELECT * FROM routines WHERE id=@lastId;
 			`,
-			[title, description, isoStartDate, isoEndDate],
+			[title, description, isoStartDate, isoEndDate, user.userId],
 		);
 		const routine = routines[0];
 		const realTodos: TodoModel[] = [];
@@ -63,6 +70,9 @@ export const insertRoutineHandler: RouteHandler<{ Body: InsertRoutineModel }> = 
 					todos.map(async (todo) => {
 						return got.post(`${protocol}://${hostname}/todo`, {
 							json: { ...todo, routine_id: routine.id },
+							headers: {
+								Authorization: request.headers.authorization,
+							},
 						});
 					}),
 				);
@@ -80,3 +90,21 @@ export const insertRoutineHandler: RouteHandler<{ Body: InsertRoutineModel }> = 
 		});
 	}
 };
+
+export const deleteRoutine: RouteHandler<{ Params: RoutineParams; Body: DeleteRoutineModel }> =
+	async (request, reply) => {
+		const { body, params, user, server } = request;
+		const [rowData] = await server.mysql.query(
+			"DELETE FROM routines WHERE id=? AND created_by=?;",
+			[params.routineId, user.userId],
+		);
+		if (body?.deleteTodos) {
+			await server.mysql.query("DELETE FROM todos WHERE routine_id=?", [params.routineId]);
+		}
+		return reply.code(200).send({
+			status: ResponseCodes.OK,
+			message: (rowData as OkPacket).affectedRows
+				? "Routine removed successfully"
+				: `No routine with id ${params.routineId} found. Nothing has changed`,
+		});
+	};

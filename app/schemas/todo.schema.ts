@@ -16,7 +16,7 @@ export const getToDoOptions: RouteShorthandOptions<
 	ContextConfigDefault
 > = {
 	schema: {
-		tags: ["ToDo"],
+		tags: ["To do"],
 		security: [
 			{
 				bearerAuth: [],
@@ -42,7 +42,7 @@ export const insertToDoOptions: RouteShorthandOptions<
 	ContextConfigDefault
 > = {
 	schema: {
-		tags: ["ToDo"],
+		tags: ["To do"],
 		security: [
 			{
 				bearerAuth: [],
@@ -66,7 +66,7 @@ export const deleteToDoOptions: RouteShorthandOptions<
 	ContextConfigDefault
 > = {
 	schema: {
-		tags: ["ToDo"],
+		tags: ["To do"],
 		security: [
 			{
 				bearerAuth: [],

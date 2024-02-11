@@ -39,7 +39,7 @@ export const swaggerConfig: SwaggerOptions = {
 	routePrefix: "/api-docs",
 	exposeRoute: true,
 	openapi: {
-		tags: [{ name: "Auth" }, { name: "User" }, { name: "Routine" }, { name: "ToDo" }],
+		tags: [{ name: "Auth" }, { name: "User" }, { name: "Routine" }, { name: "To do" }],
 		info: {
 			title: "Test",
 			description: "",
@@ -56,7 +56,26 @@ export const swaggerConfig: SwaggerOptions = {
 						email: { type: "string", format: "email" },
 					},
 				},
-				ToDo: {
+				Routine: {
+					type: "object",
+					required: ["id", "title", "created_at", "start_date", "end_date", "modified_at"],
+					properties: {
+						id: { type: "string" },
+						title: { type: "string" },
+						description: { type: "string" },
+						created_at: { type: "string" },
+						start_date: { type: "string" },
+						end_date: { type: "string" },
+						modified_at: { type: "string" },
+						todos: {
+							type: "array",
+							items: {
+								$ref: "#components/schemas/To do",
+							},
+						},
+					},
+				},
+				"To do": {
 					type: "object",
 					required: ["title", "description"],
 					properties: {
