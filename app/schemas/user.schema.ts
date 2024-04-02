@@ -9,6 +9,7 @@ import {
 import { UserModel, UserRetrieve } from "../models/user.model.js";
 import { ErrorModel } from "../models/general.model.js";
 import { Type } from "@sinclair/typebox";
+import { RoutineModel } from "../models/routine.model.js";
 
 export const getUserOptions: RouteShorthandOptions<
 	RawServerBase,
@@ -74,6 +75,27 @@ export const patchUserOptions: RouteShorthandOptions<
 		body: Type.Partial(UserModel),
 		response: {
 			200: UserRetrieve,
+			400: ErrorModel,
+		},
+	},
+};
+
+export const getUserRoutinesOptions: RouteShorthandOptions<
+	RawServerBase,
+	RawRequestDefaultExpression,
+	RawReplyDefaultExpression,
+	never,
+	ContextConfigDefault
+> = {
+	schema: {
+		tags: ["User"],
+		security: [
+			{
+				bearerAuth: [],
+			},
+		],
+		response: {
+			// 200: RoutineModel,
 			400: ErrorModel,
 		},
 	},

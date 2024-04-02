@@ -1,22 +1,29 @@
 import { UserModel, UserReply, UserRetrieve } from "../../models/user.model.js";
 import { RouteHandler } from "../../types/IHandler.js";
-import { RowDataPacket, OkPacket } from "mysql2";
+import {
+	DELETE_USER_QUERY,
+	GET_USER_BY_EMAIL_QUERY,
+	GET_USER_QUERY,
+	GET_USER_ROUTINES_QUERY,
+	INSERT_GET_USER_IMMEDIETALY_QUERY,
+	INSERT_USER_QUERY,
+	UPDATE_USER_QUERY,
+} from "../../common/queries.js";
 
 export const loginHandler: RouteHandler<{ Body: UserModel; Reply: UserReply }> = async (
 	req,
 	reply,
 ) => {
 	const { server, body } = req;
-	const [userRows] = await server.mysql.query<RowDataPacket[]>(
-		"SELECT * FROM users WHERE email=?",
-		[body.email],
-	);
+	const { rows: userRows } = await server.pg.query<UserModel>(GET_USER_BY_EMAIL_QUERY, [
+		body.email,
+	]);
 	if (!userRows.length) {
 		return reply.code(404).send({
 			message: `No user with email ${body.email} found`,
 		});
 	}
-	const userRow = userRows[0] as UserModel;
+	const userRow = userRows[0];
 	const passwordIsValid = await server.bcrypt.compare(body.password, userRow.password);
 	if (!passwordIsValid) {
 		return reply.code(401).send({
@@ -45,14 +52,8 @@ export const registerHandler: RouteHandler<{
 	const { username, email, password } = body;
 	try {
 		const encryptedPassword = await server.bcrypt.hash(password);
-		await server.mysql.query("INSERT INTO users (username, password, email) VALUES (?, ?, ?)", [
-			username,
-			encryptedPassword,
-			email,
-		]);
-		const [lastRow] = await server.mysql.query<UserModel[]>(
-			"SELECT userId FROM users WHERE id=(SELECT last_insert_id())",
-		);
+		await server.pg.query(INSERT_USER_QUERY, [username, encryptedPassword, email]);
+		const { rows: lastRow } = await server.pg.query<UserModel>(INSERT_GET_USER_IMMEDIETALY_QUERY);
 		const token = server.jwt.sign(
 			{
 				userId: lastRow[0].userId,
@@ -66,6 +67,7 @@ export const registerHandler: RouteHandler<{
 			access_token: token,
 		});
 	} catch (err: any) {
+		server.log.error(err);
 		switch (err.code) {
 			case "ER_DUP_ENTRY":
 				return reply.code(400).send({
@@ -80,10 +82,7 @@ export const registerHandler: RouteHandler<{
 
 export const getUserHandler: RouteHandler = async (req, reply) => {
 	const { server, user } = req;
-	const [userData] = await server.mysql.query<UserRetrieve[]>(
-		"SELECT username, email, id, userId FROM users WHERE userId=?",
-		[user.userId],
-	);
+	const { rows: userData } = await server.pg.query<UserRetrieve>(GET_USER_QUERY, [user.userId]);
 	if (!userData.length) {
 		return reply.code(404).send({
 			message: `No user with id ${user.userId}`,
@@ -95,12 +94,8 @@ export const getUserHandler: RouteHandler = async (req, reply) => {
 export const deleteUserHandler: RouteHandler = async (request, reply) => {
 	const { server, user } = request;
 	try {
-		const [row] = await server.mysql.query<OkPacket>("DELETE FROM `users` WHERE `userId`=?", [
-			user.userId,
-		]);
-		server.log.info("FIELDS");
-		server.log.info(row);
-		if (row.affectedRows) {
+		const { rowCount } = await server.pg.query(DELETE_USER_QUERY, [user.userId]);
+		if (rowCount) {
 			return reply.send({
 				message: "User deleted",
 			});
@@ -122,23 +117,21 @@ export const patchUserHandler: RouteHandler<{
 		if (body.password) {
 			password = await server.bcrypt.hash(body.password);
 		}
-		await server.mysql.query(
-			`UPDATE users 
-SET username = COALESCE(NULLIF(?, ""), username),
-		password = COALESCE(NULLIF(?, ""), password),
-		email = COALESCE(NULLIF(?, ""), email) 
-WHERE userId=?`,
-			[body.username, password, body.email, user.userId],
-		);
-		const [newUser] = await server.mysql.query<UserRetrieve[]>(
-			"SELECT id, username, email, userId FROM users WHERE userId=?",
-			[user.userId],
-		);
+		await server.pg.query(UPDATE_USER_QUERY, [body.username, password, body.email, user.userId]);
+		const { rows: newUser } = await server.pg.query<UserRetrieve>(GET_USER_QUERY, [user.userId]);
 		return reply.send(newUser[0]);
 	} catch (err) {
 		server.log.error(err);
 	}
 	return reply.code(400).send({
 		message: "Something happened",
+	});
+};
+
+export const getUserRoutines: RouteHandler = async (request, reply) => {
+	const { server, user } = request;
+	const { rows: data } = await server.pg.query(GET_USER_ROUTINES_QUERY, [user.userId]);
+	return reply.send({
+		data,
 	});
 };

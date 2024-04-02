@@ -6,36 +6,24 @@ import {
 	RoutineParams,
 } from "../../models/routine.model.js";
 import { TodoModel } from "../../models/todo.model.js";
-import got from "got";
 import { ResponseCodes } from "../../models/general.model.js";
-import { OkPacket } from "mysql2";
+import {
+	DELETE_ROUTINE_QUERY,
+	DELETE_ROUTINE_TODOS_QUERY,
+	GET_ROUTINE_QUERY,
+} from "../../common/queries.js";
 
 export const getRoutine: RouteHandler<{ Params: RoutineParams }> = async (request, reply) => {
 	const { routineId } = request.params;
 	const { server } = request;
 	try {
-		const [data] = await server.mysql.query<[RoutineModel[], TodoModel[]]>(
-			`
-			SELECT * FROM routines WHERE id=?;
-			SELECT
-			todos.id,
-			todos.title,
-			todos.description,
-			todos.created_at,
-			todos.modified_at
-			FROM routines
-			RIGHT JOIN todos ON routines.id=todos.routine_id
-			WHERE routines.id=?;
-			`,
-			[routineId, routineId],
-		);
-		const [routines, todos] = data;
-		if (!routines.length) {
+		const routines = await server.pg.query<RoutineModel[]>(GET_ROUTINE_QUERY, [routineId]);
+		if (!routines.rows.length) {
 			return reply.code(404).send({
 				message: `No routine with id ${routineId}`,
 			});
 		}
-		return reply.send({ ...routines[0], todos });
+		return reply.send(routines.rows[0]);
 	} catch (err) {
 		server.log.error(err);
 		return reply.code(500).send({
@@ -48,41 +36,35 @@ export const insertRoutineHandler: RouteHandler<{ Body: InsertRoutineModel }> = 
 	request,
 	reply,
 ) => {
-	const { server, body, hostname, protocol, user } = request;
+	const { server, body, user } = request;
 	const { title, description, start_date, end_date, todos } = body;
 	try {
 		const isoStartDate = new Date(start_date).toISOString().replace(/T.+/, "");
 		const isoEndDate = new Date(end_date).toISOString().replace(/T.+/, "");
-		const [[, , routines]] = await server.mysql.query<[unknown, any, RoutineModel[]]>(
-			`
-				SET @lastId=UUID();
-				INSERT INTO routines (id, title, description, start_date, end_date, created_at, created_by)
-				VALUES (@lastId, ?, ?, ?, ?, NOW(), ?);
-				SELECT * FROM routines WHERE id=@lastId;
-			`,
-			[title, description, isoStartDate, isoEndDate, user.userId],
-		);
-		const routine = routines[0];
-		const realTodos: TodoModel[] = [];
-		if (todos?.length) {
-			try {
-				const todoRequests = await Promise.all(
-					todos.map(async (todo) => {
-						return got.post(`${protocol}://${hostname}/todo`, {
-							json: { ...todo, routine_id: routine.id },
-							headers: {
-								Authorization: request.headers.authorization,
-							},
-						});
+		const routine = await server.pg.transact<RoutineModel>(async (client) => {
+			const _routine = await client.query<RoutineModel>(
+				`INSERT INTO routines(title, description, start_date, end_date, created_at, created_by) VALUES($1, $2, $3, $4, NOW(), $5) RETURNING *`,
+				[title, description, isoStartDate, isoEndDate, user.userId],
+			);
+			if (todos?.length) {
+				_routine.rows[0].todos = await Promise.all<TodoModel>(
+					todos.map<Promise<TodoModel>>(async (todo) => {
+						const _todo = await client.query<TodoModel>(
+							`INSERT INTO todos (title, description) VALUES($1, $2) RETURNING *`,
+							[todo.title, todo.description],
+						);
+						await client.query(`INSERT INTO routines_todos VALUES ($1, $2)`, [
+							_routine.rows[0].id,
+							_todo.rows[0].id,
+						]);
+						return _todo.rows[0];
 					}),
 				);
-				todoRequests.forEach((todo) => realTodos.push(JSON.parse(todo.body)));
-				server.log.info(JSON.parse(todoRequests[0].body));
-			} catch (err) {
-				server.log.error(err);
 			}
-		}
-		return reply.code(200).send({ ...routine, todos: realTodos || [] });
+
+			return _routine.rows[0];
+		});
+		return reply.code(200).send(routine);
 	} catch (err) {
 		server.log.error(err);
 		return reply.code(500).send({
@@ -91,20 +73,19 @@ export const insertRoutineHandler: RouteHandler<{ Body: InsertRoutineModel }> = 
 	}
 };
 
-export const deleteRoutine: RouteHandler<{ Params: RoutineParams; Body: DeleteRoutineModel }> =
-	async (request, reply) => {
-		const { body, params, user, server } = request;
-		const [rowData] = await server.mysql.query(
-			"DELETE FROM routines WHERE id=? AND created_by=?;",
-			[params.routineId, user.userId],
-		);
-		if (body?.deleteTodos) {
-			await server.mysql.query("DELETE FROM todos WHERE routine_id=?", [params.routineId]);
-		}
-		return reply.code(200).send({
-			status: ResponseCodes.OK,
-			message: (rowData as OkPacket).affectedRows
-				? "Routine removed successfully"
-				: `No routine with id ${params.routineId} found. Nothing has changed`,
-		});
-	};
+export const deleteRoutine: RouteHandler<{
+	Params: RoutineParams;
+	Body: DeleteRoutineModel;
+}> = async (request, reply) => {
+	const { body, params, user, server } = request;
+	const data = await server.pg.query(DELETE_ROUTINE_QUERY, [params.routineId, user.userId]);
+	if (body?.deleteTodos) {
+		await server.pg.query(DELETE_ROUTINE_TODOS_QUERY, [params.routineId]);
+	}
+	return reply.code(200).send({
+		status: ResponseCodes.OK,
+		message: data.rowCount
+			? "Routine removed successfully"
+			: `No routine with id ${params.routineId} found. Nothing has changed`,
+	});
+};

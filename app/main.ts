@@ -1,6 +1,6 @@
 import fastify, { FastifyServerOptions } from "fastify";
 import authRoutes from "./routes/auth.route.js";
-import mysqlInstance from "./plugins/mysql.js";
+import pgPlugin from "./plugins/pg.js";
 import fastifySwagger from "@fastify/swagger";
 import { swaggerConfig } from "./common/config.js";
 import jwtInstance from "./plugins/jwt.js";
@@ -39,7 +39,7 @@ const build = (options: FastifyServerOptions) => {
 
 	app.register(dotenv);
 	app.register(fastifyBlipp);
-	app.register(mysqlInstance);
+	app.register(pgPlugin);
 	app.register(fastifyBcrypt.default, {
 		saltWorkFactor: 12,
 	});

@@ -1,4 +1,4 @@
-import mysql from "mysql2";
+import pg from "pg";
 import Postgrator from "postgrator";
 import {dirname, join} from "path";
 import {fileURLToPath} from "url";
@@ -8,8 +8,7 @@ dotenv.config();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 async function migrateDB() {
-	const client = mysql.createConnection({
-		multipleStatements: true,
+	const client = new pg.Client({
 		host: process.env.DATABASE_HOST,
 		user: process.env.DATABASE_USERNAME,
 		database: process.env.DATABASE_NAME,
@@ -19,7 +18,7 @@ async function migrateDB() {
 	await client.connect();
 	const postGrator = new Postgrator({
 		migrationPattern: join(__dirname, "scripts/*"),
-		driver: "mysql",
+		driver: "pg",
 		database: "routiner",
 		execQuery: (query) => {
 			return new Promise((resolve, reject) => {

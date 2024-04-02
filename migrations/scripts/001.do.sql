@@ -1,41 +1,41 @@
 -- create users table
-CREATE TABLE `users` (
- `id` int NOT NULL AUTO_INCREMENT,
- `userId` varchar(40) DEFAULT (uuid()),
- `username` varchar(255) NOT NULL,
- `password` varchar(255) NOT NULL,
- `email` varchar(255) NOT NULL,
- PRIMARY KEY (`id`),
- UNIQUE KEY `uniqueEmail` (`email`)
+CREATE TABLE users (
+ "id" SERIAL PRIMARY KEY,
+ "userId" UUID DEFAULT uuid_generate_v4(),
+ "username" VARCHAR(255) NOT NULL,
+ "password" VARCHAR(255) NOT NULL,
+ "email" VARCHAR(255) NOT NULL UNIQUE
 );
 
 -- create routines table
 
-CREATE TABLE `routines` (
-  `id` varchar(40) NOT NULL DEFAULT (uuid()),
-  `title` varchar(20) NOT NULL,
-  `description` varchar(235) DEFAULT '',
-  `start_date` date NOT NULL,
-  `end_date` date NOT NULL,
-  `created_at` datetime NOT NULL,
-  `modified_at` datetime NOT NULL DEFAULT (now()),
-  `created_by` varchar(45) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
+CREATE TABLE routines (
+  "id" UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  "title" VARCHAR(20) NOT NULL,
+  "description" VARCHAR(235) DEFAULT '',
+  "start_date" DATE NOT NULL,
+  "end_date" DATE NOT NULL,
+  "created_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "modified_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "created_by" VARCHAR(45) NOT NULL
 );
 
 
 
 -- create todos table
-CREATE TABLE `todos` (
-  `id` varchar(40) NOT NULL DEFAULT (uuid()),
-  `title` varchar(32) NOT NULL,
-  `description` varchar(64) DEFAULT '',
-  `created_at` datetime NOT NULL,
-  `modified_at` datetime NOT NULL DEFAULT (now()),
-  `routine_id` varchar(40) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`),
-  KEY `fk_routine_id` (`routine_id`),
-  CONSTRAINT `fk_routine_id` FOREIGN KEY (`routine_id`) REFERENCES `routines` (`id`) ON DELETE SET NULL ON UPDATE SET NULL
+CREATE TABLE todos (
+  "id" UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  "title" VARCHAR(32) NOT NULL,
+  "description" VARCHAR(64) DEFAULT '',
+  "created_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "modified_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- create routines_todos
+CREATE TABLE routines_todos (
+  "routine_id" UUID NOT NULL,
+  "todo_id" UUID NOT NULL,
+  PRIMARY KEY (routine_id, todo_id),
+  FOREIGN KEY (routine_id) REFERENCES routines (id),
+  FOREIGN KEY (todo_id) REFERENCES todos (id)
 );

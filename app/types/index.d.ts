@@ -1,11 +1,11 @@
 import { IDotEnv } from "./IRoutinerDB";
-import { MySQLPromiseConnection } from "@fastify/mysql";
+import { Pool } from "@types/pg";
 import User from "../controllers/User/user.controller";
 
 declare module "fastify" {
 	interface FastifyInstance {
 		environmentConfiguration: IDotEnv;
-		mysql: MySQLPromiseConnection;
+		pg: Pool;
 		user: typeof User;
 	}
 }

@@ -1,7 +1,11 @@
 import { RouteHandler } from "../../types/IHandler.js";
 import { InsertToDoModel, TodoModel, ToDoParams } from "../../models/todo.model.js";
 import { ResponseCodes } from "../../models/general.model.js";
-import { ResultSetHeader } from "mysql2";
+import {
+	DELETE_TODO_ITEM_QUERY,
+	GET_TODO_ITEM_QUERY,
+	INSERT_TODO_ITEM_QUERY,
+} from "../../common/queries.js";
 
 export const getToDoHandler: RouteHandler<{ Params: ToDoParams }> = async (request, reply) => {
 	const { server } = request;
@@ -12,10 +16,7 @@ export const getToDoHandler: RouteHandler<{ Params: ToDoParams }> = async (reque
 			message: "'id' field must be a string.",
 		});
 	}
-
-	const [todoItems] = await server.mysql.query<TodoModel[]>("SELECT * FROM `todos` WHERE `id`=?", [
-		id,
-	]);
+	const { rows: todoItems } = await server.pg.query<TodoModel[]>(GET_TODO_ITEM_QUERY, [id]);
 	if (!todoItems.length) {
 		return reply.code(404).send({
 			message: `No to do item with id ${id} found.`,
@@ -31,10 +32,13 @@ export const insertToDoHandler: RouteHandler<{ Body: InsertToDoModel }> = async 
 	const { server, body } = request;
 	const { title, description, routine_id } = body;
 	try {
-		const [[, , toDo]] = await server.mysql.query<[any, any, TodoModel[]]>(
-			"SET @lastId=UUID();INSERT INTO todos (`id`, `title`, `description`, `created_at`, `modified_at`, `routine_id`) VALUES(@lastId, ?, ?, NOW(), NOW(), ?);SELECT * FROM todos WHERE `id`=@lastId;",
-			[title, description, routine_id],
-		);
+		const {
+			rows: [, , toDo],
+		} = await server.pg.query<[any, any, TodoModel[]]>(INSERT_TODO_ITEM_QUERY, [
+			title,
+			description,
+			routine_id,
+		]);
 		return reply.code(200).send(toDo[0]);
 	} catch (err) {
 		server.log.error(err);
@@ -53,10 +57,8 @@ export const deleteToDoHandler: RouteHandler<{ Params: ToDoParams }> = async (re
 		});
 	}
 	try {
-		const [info] = await server.mysql.query<ResultSetHeader>("DELETE FROM todos WHERE `id`=?", [
-			id,
-		]);
-		if (!info.affectedRows) {
+		const { rowCount } = await server.pg.query(DELETE_TODO_ITEM_QUERY, [id]);
+		if (!rowCount) {
 			return reply.code(404).send({
 				message: `No TODO found with id '${id}' found.`,
 			});
